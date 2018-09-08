@@ -1,10 +1,15 @@
 package com.reddogsoftware.mbresnan.wakemeupwhen;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +31,42 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        // Request necessary permissions
+        boolean missingPhoneStatePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED;
+        boolean missingOutgoingPermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.PROCESS_OUTGOING_CALLS)
+                != PackageManager.PERMISSION_GRANTED;
+
+        Log.d("PERMS", "PS: " + missingPhoneStatePermission + " OP: " + missingOutgoingPermission);
+        if (missingPhoneStatePermission || missingOutgoingPermission) {
+
+            // Should we show an explanation?
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+//                    Manifest.permission.RECORD_AUDIO)) {
+//                // Show an explanation to the user *asynchronously* -- don't block
+//                // this thread waiting for the user's response! After the user
+//                // sees the explanation, try again to request the permission.
+//            } else {
+//                // No explanation needed; request the permission
+//                ActivityCompat.requestPermissions(this,
+//                        new String[]{Manifest.permission.RECORD_AUDIO},
+//                        1);
+//
+//                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+//                // app-defined int constant. The callback method gets the
+//                // result of the request.
+//            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.PROCESS_OUTGOING_CALLS},
+                    1);
+        } else {
+            // Permission has already been granted
+        }
+
+        CallReceiver myRec = new CallReceiver();
     }
 
     @Override
